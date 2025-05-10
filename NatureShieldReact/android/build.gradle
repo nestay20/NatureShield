@@ -1,0 +1,47 @@
+
+
+buildscript {
+    ext {
+        buildToolsVersion   = "35.0.0"
+        minSdkVersion       = 24
+        compileSdkVersion   = 35
+        targetSdkVersion    = 35
+        ndkVersion          = "27.1.12297006"
+        kotlinVersion       = "2.0.21"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.android.tools.build:gradle:8.1.1")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+    }
+}
+
+allprojects {
+    repositories {
+        mavenLocal()
+        google()
+        mavenCentral()
+    }
+}
+
+// ─── propagate your root ext.compileSdkVersion → EVERY subproject ───────────────
+subprojects { project ->
+    afterEvaluate {
+        if (project.plugins.hasPlugin("com.android.library") ||
+            project.plugins.hasPlugin("com.android.application")) {
+            project.android {
+                compileSdkVersion rootProject.ext.compileSdkVersion
+                defaultConfig {
+                    targetSdkVersion rootProject.ext.targetSdkVersion
+                }
+            }
+        }
+    }
+}
+// ────────────────────────────────────────────────────────────────────────────────
+
+apply plugin: "com.facebook.react.rootproject"
